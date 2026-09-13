@@ -273,7 +273,7 @@ a { color: inherit; }
   transform: translate3d(0, var(--shift, 0), 0);
   will-change: transform;
   opacity: 1;
-  transition: opacity .6s ease;
+  transition: opacity .5s ease;
 }
 /* Пауза между кругами: слой уходит в темноту и возвращается уже с чертежом */
 .hero__media.is-fading { opacity: 0; }
@@ -1200,21 +1200,30 @@ a { color: inherit; }
           p.catch(showFinal);
         }
       };
-      /* Цикл: доиграли — коротко держим готовый дом, уходим в затемнение,
-         возвращаемся уже с чертежа. Без обратной перемотки: дом не разбирается,
-         постройка просто начинается заново. */
-      var HOLD = 1200, FADE = 600;
-      var loopTimer = null;
-      video.addEventListener("ended", function () {
+      /* Цикл без паузы: затемнение начинается за мгновение до конца ролика,
+         пока догорают последние фонари. Пока кадр темнеет, видео отматывается
+         на начало — зритель не видит ни стоп-кадра, ни обратной перемотки. */
+      var FADE = 500, LEAD = 0.4;
+      var loopTimer = null, cycling = false;
+
+      var startFade = function () {
+        if (cycling) return;
+        cycling = true;
+        media.classList.add("is-fading");
         loopTimer = window.setTimeout(function () {
-          media.classList.add("is-fading");
-          loopTimer = window.setTimeout(function () {
-            video.currentTime = 0;
-            media.classList.remove("is-fading");
-            resume();
-          }, FADE);
-        }, HOLD);
+          video.pause();
+          video.currentTime = 0;
+          media.classList.remove("is-fading");
+          cycling = false;
+          resume();
+        }, FADE);
+      };
+
+      video.addEventListener("timeupdate", function () {
+        if (!video.duration || cycling) return;
+        if (video.currentTime >= video.duration - LEAD) startFade();
       });
+      video.addEventListener("ended", startFade);
 
       /* Возобновление: после перезапуска круга, возврата на первый экран
          или переключения обратно на вкладку. */
@@ -1256,6 +1265,7 @@ a { color: inherit; }
             } else {
               window.clearTimeout(loopTimer);
               media.classList.remove("is-fading");
+              cycling = false;
               if (!video.paused) video.pause();
             }
           });
