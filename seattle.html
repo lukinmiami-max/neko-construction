@@ -273,7 +273,7 @@ a { color: inherit; }
   transform: translate3d(0, var(--shift, 0), 0);
   will-change: transform;
   opacity: 1;
-  transition: opacity .9s ease;
+  transition: opacity .6s ease;
 }
 /* Пауза между кругами: слой уходит в темноту и возвращается уже с чертежом */
 .hero__media.is-fading { opacity: 0; }
@@ -1200,10 +1200,10 @@ a { color: inherit; }
           p.catch(showFinal);
         }
       };
-      /* Цикл: доиграли — держим готовый дом 5 секунд, уходим в затемнение,
+      /* Цикл: доиграли — коротко держим готовый дом, уходим в затемнение,
          возвращаемся уже с чертежа. Без обратной перемотки: дом не разбирается,
          постройка просто начинается заново. */
-      var HOLD = 5000, FADE = 900;
+      var HOLD = 1200, FADE = 600;
       var loopTimer = null;
       video.addEventListener("ended", function () {
         loopTimer = window.setTimeout(function () {
@@ -1219,11 +1219,27 @@ a { color: inherit; }
       /* Возобновление: после перезапуска круга, возврата на первый экран
          или переключения обратно на вкладку. */
       var visible = true;
-      var resume = function () {
+      var retry = null;
+      var resume = function (attempt) {
+        window.clearTimeout(retry);
         if (!started || !visible || media.classList.contains("is-fading")) return;
         if (!video.paused) return;
+        var n = attempt || 1;
         var pr = video.play();
-        if (pr && typeof pr.catch === "function") pr.catch(function () {});
+        if (pr && typeof pr.catch === "function") {
+          pr.catch(function () {
+            /* Браузер может отказать, если вкладка в фоне или ресурс ещё не готов.
+               Пробуем ещё несколько раз, прежде чем сдаться. */
+            if (n < 6) retry = window.setTimeout(function () { resume(n + 1); }, 600);
+            else showFinal();
+          });
+        }
+        /* Подстраховка на случай, если play() не вернул обещание */
+        if (n < 6) {
+          retry = window.setTimeout(function () {
+            if (video.paused) resume(n + 1);
+          }, 700);
+        }
       };
       document.addEventListener("visibilitychange", function () {
         if (!document.hidden) resume();
