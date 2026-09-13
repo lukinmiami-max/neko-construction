@@ -288,10 +288,16 @@ a { color: inherit; }
 }
 .hero__video { opacity: .62; }
 /* Статичный кадр: мобильные, отключённая анимация, заблокированный автоплей */
+/* По умолчанию — первый кадр, чертёж: совпадает с началом ролика,
+   поэтому старт происходит без скачка. Готовый дом показываем только там,
+   где видео не будет вовсе: телефоны, «уменьшить движение», ошибка. */
 .hero__still {
   display: none;
-  background: url("media/hero-poster.jpg") center / cover no-repeat;
+  background: url("media/hero-start.jpg") center / cover no-repeat;
   opacity: .62;
+}
+.hero__media[data-final="true"] .hero__still {
+  background-image: url("media/hero-poster.jpg");
 }
 .hero__media[data-still="true"] .hero__video { opacity: 0; }
 .hero__media[data-still="true"] .hero__still { display: block; }
@@ -660,7 +666,9 @@ a { color: inherit; }
 
 /* ============================================================ responsive */
 @media (max-width: 700px) {
-  .hero__still { background-image: url("media/hero-mobile.jpg"); }
+  .hero__media[data-final="true"] .hero__still {
+    background-image: url("media/hero-mobile.jpg");
+  }
 }
 @media (max-width: 1000px) {
   .hero__grid { grid-template-columns: 1fr; align-items: start; }
@@ -1156,8 +1164,14 @@ a { color: inherit; }
   var video = document.getElementById("hero-video");
   if (media && video) {
     var wide = window.matchMedia("(min-width: 701px)").matches;
+    var showFinal = function () {
+      media.setAttribute("data-final", "true");
+      media.setAttribute("data-still", "true");
+    };
 
-    if (!reduce && wide) {
+    if (reduce || !wide) {
+      showFinal();
+    } else {
       [["webm", "video/webm"], ["mp4", "video/mp4"]].forEach(function (f) {
         var src = video.getAttribute("data-" + f[0]);
         if (!src) return;
@@ -1170,9 +1184,7 @@ a { color: inherit; }
       video.addEventListener("playing", function () {
         media.setAttribute("data-still", "false");
       });
-      video.addEventListener("error", function () {
-        media.setAttribute("data-still", "true");
-      }, true);
+      video.addEventListener("error", showFinal, true);
 
       /* Запуск по первому движению страницы. До этого на экране стоит
          чертёж — заголовок ложится на спокойный тёмный фон. Первый скролл
@@ -1185,7 +1197,7 @@ a { color: inherit; }
         off();
         var p = video.play();
         if (p && typeof p.catch === "function") {
-          p.catch(function () { media.setAttribute("data-still", "true"); });
+          p.catch(showFinal);
         }
       };
       /* Цикл: доиграли — держим готовый дом 5 секунд, уходим в затемнение,
@@ -1198,11 +1210,23 @@ a { color: inherit; }
           media.classList.add("is-fading");
           loopTimer = window.setTimeout(function () {
             video.currentTime = 0;
-            var pp = video.play();
-            if (pp && typeof pp.catch === "function") pp.catch(function () {});
             media.classList.remove("is-fading");
+            resume();
           }, FADE);
         }, HOLD);
+      });
+
+      /* Возобновление: после перезапуска круга, возврата на первый экран
+         или переключения обратно на вкладку. */
+      var visible = true;
+      var resume = function () {
+        if (!started || !visible || media.classList.contains("is-fading")) return;
+        if (!video.paused) return;
+        var pr = video.play();
+        if (pr && typeof pr.catch === "function") pr.catch(function () {});
+      };
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) resume();
       });
 
       /* Ушли со стартового экрана — останавливаем, чтобы не крутить впустую */
@@ -1210,11 +1234,9 @@ a { color: inherit; }
       if (hero && "IntersectionObserver" in window) {
         new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {
+            visible = en.isIntersecting;
             if (en.isIntersecting) {
-              if (started && video.paused && !media.classList.contains("is-fading")) {
-                var pr = video.play();
-                if (pr && typeof pr.catch === "function") pr.catch(function () {});
-              }
+              resume();
             } else {
               window.clearTimeout(loopTimer);
               media.classList.remove("is-fading");
