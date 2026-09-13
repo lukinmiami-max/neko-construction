@@ -655,9 +655,8 @@ a { color: inherit; }
 }
 
 /* ============================================================ responsive */
-@media (max-width: 900px) {
-  .hero__video { display: none; }
-  .hero__still { display: block; background-image: url("media/hero-mobile.jpg"); }
+@media (max-width: 700px) {
+  .hero__still { background-image: url("media/hero-mobile.jpg"); }
 }
 @media (max-width: 1000px) {
   .hero__grid { grid-template-columns: 1fr; align-items: start; }
@@ -927,13 +926,11 @@ a { color: inherit; }
 
   <!-- ========================================================= HERO -->
   <section class="hero">
-    <div class="hero__media" id="hero-media" aria-hidden="true">
+    <div class="hero__media" id="hero-media" data-still="true" aria-hidden="true">
       <video class="hero__video" id="hero-video"
              poster="media/hero-start.jpg"
-             autoplay muted playsinline preload="auto">
-        <source src="media/hero.webm" type="video/webm">
-        <source src="media/hero.mp4" type="video/mp4">
-      </video>
+             muted playsinline preload="auto"
+             data-webm="media/hero.webm" data-mp4="media/hero.mp4"></video>
       <div class="hero__still" id="hero-still"></div>
       <div class="hero__scrim"></div>
     </div>
@@ -1418,35 +1415,58 @@ a { color: inherit; }
     });
   }
 
-  /* ---- hero: видео проигрывается один раз и замирает на готовом доме ----
-     Постер — первый кадр, старт бесшовный. Подменяем на статичный кадр только
-     по реальной причине: системная настройка «уменьшить движение», ошибка
-     загрузки или отказ браузера в автоплее. Никаких таймеров: на медленном
-     соединении видео просто стартует позже, и это не повод его прятать. */
+  /* ---- hero: видео подключается только там, где оно уместно ----
+     Источники не прописаны в разметке: JS добавляет их сам, если экран шире
+     700px и в системе не включено «уменьшить движение». На телефонах файл
+     вообще не скачивается — вместо него статичный кадр. Видео играет один раз
+     и замирает на построенном доме. */
   var media = document.getElementById("hero-media");
   var video = document.getElementById("hero-video");
   if (media && video) {
-    var still = function (on) {
-      media.setAttribute("data-still", on ? "true" : "false");
-    };
+    var wide = window.matchMedia("(min-width: 701px)").matches;
 
-    if (reduce) {
-      still(true);
-    } else {
-      video.addEventListener("playing", function () { still(false); });
-      video.addEventListener("error", function () { still(true); }, true);
-      var last = video.querySelector("source:last-of-type");
-      if (last) last.addEventListener("error", function () { still(true); });
+    if (!reduce && wide) {
+      [["webm", "video/webm"], ["mp4", "video/mp4"]].forEach(function (f) {
+        var src = video.getAttribute("data-" + f[0]);
+        if (!src) return;
+        var s = document.createElement("source");
+        s.src = src;
+        s.type = f[1];
+        video.appendChild(s);
+      });
 
+      video.addEventListener("playing", function () {
+        media.setAttribute("data-still", "false");
+      });
+      video.addEventListener("error", function () {
+        media.setAttribute("data-still", "true");
+      }, true);
+
+      /* Запуск по первому движению страницы. До этого на экране стоит
+         чертёж — заголовок ложится на спокойный тёмный фон. Первый скролл
+         запускает постройку. Если посетитель читает не прокручивая, через
+         5 секунд запускаем сами: готовый дом — это то, ради чего ролик. */
+      var started = false;
       var kick = function () {
+        if (started) return;
+        started = true;
+        off();
         var p = video.play();
         if (p && typeof p.catch === "function") {
-          p.catch(function () { still(true); });
+          p.catch(function () { media.setAttribute("data-still", "true"); });
         }
       };
-      if (video.readyState >= 2) kick();
-      else video.addEventListener("loadeddata", kick, { once: true });
-      video.addEventListener("canplay", kick, { once: true });
+      var events = ["scroll", "wheel", "touchmove", "keydown"];
+      var off = function () {
+        events.forEach(function (e) { window.removeEventListener(e, kick); });
+        window.clearTimeout(timer);
+      };
+      events.forEach(function (e) {
+        window.addEventListener(e, kick, { passive: true });
+      });
+      var timer = window.setTimeout(kick, 5000);
+
+      video.load();
     }
 
     /* лёгкий параллакс подложки при скролле */
