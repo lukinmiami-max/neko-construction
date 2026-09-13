@@ -272,7 +272,11 @@ a { color: inherit; }
   overflow: hidden;
   transform: translate3d(0, var(--shift, 0), 0);
   will-change: transform;
+  opacity: 1;
+  transition: opacity .9s ease;
 }
+/* Пауза между кругами: слой уходит в темноту и возвращается уже с чертежом */
+.hero__media.is-fading { opacity: 0; }
 .hero__video,
 .hero__still {
   position: absolute;
@@ -1456,6 +1460,42 @@ a { color: inherit; }
           p.catch(function () { media.setAttribute("data-still", "true"); });
         }
       };
+      /* Цикл: доиграли — держим готовый дом 5 секунд, уходим в затемнение,
+         возвращаемся уже с чертежа. Без обратной перемотки: дом не разбирается,
+         постройка просто начинается заново. */
+      var HOLD = 5000, FADE = 900;
+      var loopTimer = null;
+      video.addEventListener("ended", function () {
+        loopTimer = window.setTimeout(function () {
+          media.classList.add("is-fading");
+          loopTimer = window.setTimeout(function () {
+            video.currentTime = 0;
+            var pp = video.play();
+            if (pp && typeof pp.catch === "function") pp.catch(function () {});
+            media.classList.remove("is-fading");
+          }, FADE);
+        }, HOLD);
+      });
+
+      /* Ушли со стартового экрана — останавливаем, чтобы не крутить впустую */
+      var hero = document.querySelector(".hero");
+      if (hero && "IntersectionObserver" in window) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) {
+              if (started && video.paused && !media.classList.contains("is-fading")) {
+                var pr = video.play();
+                if (pr && typeof pr.catch === "function") pr.catch(function () {});
+              }
+            } else {
+              window.clearTimeout(loopTimer);
+              media.classList.remove("is-fading");
+              if (!video.paused) video.pause();
+            }
+          });
+        }, { threshold: 0.15 }).observe(hero);
+      }
+
       var events = ["scroll", "wheel", "touchmove", "keydown"];
       var off = function () {
         events.forEach(function (e) { window.removeEventListener(e, kick); });
