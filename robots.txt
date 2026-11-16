@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nekoconstruction.com/sitemap.xml
+Sitemap: https://neko-construction.com/sitemap.xml
