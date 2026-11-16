@@ -939,6 +939,19 @@ a { color: inherit; }
   .nav--open .nav__drop::after { display: none; }
 }
 
+
+.posts { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.post-card { background: var(--bg); border: 1px solid var(--line); display: grid; text-decoration: none; color: inherit; }
+.post-card img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.post-card__body { padding: 22px; display: grid; gap: 10px; }
+.post-card h3 { font-size: var(--step-1); letter-spacing: -0.01em; }
+.post-card p { color: var(--ink-2); font-size: var(--step--1); }
+.post-card:hover h3 { color: var(--gold-ink); }
+
+/* nav: keep items on one line now that Blog is in the menu */
+.nav a, .nav__toggle, .header .btn { white-space: nowrap; }
+@media (max-width: 1420px) { .nav { gap: 18px; } .nav a, .nav__toggle { letter-spacing: 0.08em; } }
+@media (max-width: 1180px) { .header__tel { display: none; } }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"GeneralContractor",
@@ -969,6 +982,7 @@ a { color: inherit; }
       </div>
       <a href="index.html#why">Why NEKO</a>
       <a href="index.html#process">Process</a>
+      <a href="blog/">Blog</a>
     </nav>
     <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
     <a class="header__tel" href="tel:+14257404501">(425) 740-4501</a>
@@ -1069,6 +1083,26 @@ a { color: inherit; }
     </div>
   </section>
 
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Seattle guides</p>
+        <h2>Before you remodel in Seattle</h2>
+        <p class="lede">Real costs, timelines and permit rules from jobs we do here.</p>
+      </div>
+      <div class="posts reveal">
+        <a class="post-card" href="blog/bathroom-remodel-cost-seattle/">
+          <img src="media/lynnwood-bath-800.jpg" alt="" width="800" height="600" loading="lazy" decoding="async">
+          <div class="post-card__body">
+            <p class="eyebrow">Bathrooms</p>
+            <h3>Bathroom Remodel in Seattle: Cost, Timeline and When You Need a Permit</h3>
+            <p>What a bathroom remodel costs in Seattle in 2026, how long it takes, and which work needs a permit.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--surface">
     <div class="wrap">
       <div class="section-head reveal">
@@ -1099,6 +1133,7 @@ a { color: inherit; }
           <li><a href="index.html#services">Commercial build-outs</a></li>
           <li><a href="index.html#services">New construction</a></li>
           <li><a href="index.html#services">General contracting</a></li>
+          <li><a href="blog/">Remodeling guides</a></li>
         </ul>
       </div>
       <div>

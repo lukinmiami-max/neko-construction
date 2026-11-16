@@ -939,6 +939,11 @@ a { color: inherit; }
   .nav--open .nav__drop::after { display: none; }
 }
 
+
+/* nav: keep items on one line now that Blog is in the menu */
+.nav a, .nav__toggle, .header .btn { white-space: nowrap; }
+@media (max-width: 1420px) { .nav { gap: 18px; } .nav a, .nav__toggle { letter-spacing: 0.08em; } }
+@media (max-width: 1180px) { .header__tel { display: none; } }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"GeneralContractor",
@@ -969,6 +974,7 @@ a { color: inherit; }
       </div>
       <a href="index.html#why">Why NEKO</a>
       <a href="index.html#process">Process</a>
+      <a href="blog/">Blog</a>
     </nav>
     <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
     <a class="header__tel" href="tel:+14257404501">(425) 740-4501</a>
@@ -1099,6 +1105,7 @@ a { color: inherit; }
           <li><a href="index.html#services">Commercial build-outs</a></li>
           <li><a href="index.html#services">New construction</a></li>
           <li><a href="index.html#services">General contracting</a></li>
+          <li><a href="blog/">Remodeling guides</a></li>
         </ul>
       </div>
       <div>
