@@ -1006,6 +1006,19 @@ a { color: inherit; }
   border: 2px solid var(--gold);
   object-fit: cover;
 }
+
+.shot__img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+.case {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: clamp(22px, 2.6vw, 30px);
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+.case__list { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; color: var(--ink-2); }
+.case .btn { justify-self: start; }
+@media (max-width: 900px) { .gallery .shot--wide { grid-column: 1 / -1; } .case { grid-column: 1 / -1; } }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"GeneralContractor",
@@ -1163,33 +1176,35 @@ a { color: inherit; }
         <p class="eyebrow">Recent work</p>
         <h2>Projects around Puget Sound</h2>
         <p class="lede">
-          Every photo below is a placeholder. Swap in the contractor's own job photos before
-          this page goes live — stock images of somebody else's kitchen are the fastest way
-          to lose a lead who has already seen that photo elsewhere.
+          Real jobs, photographed on site before we started and after we finished.
         </p>
       </div>
 
       <div class="gallery reveal">
         <div class="shot shot--wide">
-          <figure><div class="slot" role="img" aria-label="Placeholder for a whole-home renovation photo"></div></figure>
-          <figcaption><b>Whole-home renovation</b><span>Bellevue · 2,400 sq ft · 14 weeks</span></figcaption>
+          <figure>
+            <picture>
+              <source type="image/webp" srcset="media/lynnwood-bath-800.webp 800w, media/lynnwood-bath-1600.webp 1600w" sizes="(max-width: 560px) 100vw, 66vw">
+              <img class="shot__img" src="media/lynnwood-bath-1600.jpg"
+                   srcset="media/lynnwood-bath-800.jpg 800w, media/lynnwood-bath-1600.jpg 1600w" sizes="(max-width: 560px) 100vw, 66vw"
+                   width="1600" height="1200" loading="lazy" decoding="async"
+                   alt="Bathroom remodel in Lynnwood, before and after: old tub, tile and vanity replaced with a new tub, glass shower panel, porcelain tile, quartz vanity and lit floating shelves">
+            </picture>
+          </figure>
+          <figcaption><b>Bathroom remodel</b><span>Lynnwood &middot; 2 weeks</span></figcaption>
         </div>
-        <div class="shot">
-          <figure><div class="slot" role="img" aria-label="Placeholder for a kitchen remodel photo"></div></figure>
-          <figcaption><b>Kitchen remodel</b><span>Ballard · 11 weeks</span></figcaption>
-        </div>
-        <div class="shot">
-          <figure><div class="slot" role="img" aria-label="Placeholder for a bathroom remodel photo"></div></figure>
-          <figcaption><b>Primary bath</b><span>Kirkland · 6 weeks</span></figcaption>
-        </div>
-        <div class="shot">
-          <figure><div class="slot" role="img" aria-label="Placeholder for a commercial tenant improvement photo"></div></figure>
-          <figcaption><b>Tenant improvement</b><span>SoDo · 3,100 sq ft</span></figcaption>
-        </div>
-        <div class="shot">
-          <figure><div class="slot" role="img" aria-label="Placeholder for a deck and siding photo"></div></figure>
-          <figcaption><b>Deck &amp; siding</b><span>Renton · 5 weeks</span></figcaption>
-        </div>
+        <aside class="case">
+          <p class="eyebrow">What we did</p>
+          <ul class="case__list">
+            <li>New tub with a fixed glass shower panel</li>
+            <li>New tile on the floor and tub walls</li>
+            <li>Vanity with a quartz top</li>
+            <li>Floating shelves with built-in lighting</li>
+            <li>Electric heated floor</li>
+            <li>Old supply pipes replaced with new ones</li>
+          </ul>
+          <a class="btn btn--primary" href="#estimate">Get a bathroom estimate</a>
+        </aside>
       </div>
     </div>
   </section>
@@ -1212,7 +1227,7 @@ a { color: inherit; }
           <p class="eyebrow eyebrow--on-dark">Who you will be talking to</p>
           <blockquote class="owner__quote">
             <p>&ldquo;I walk your house, I write the estimate, and I pick up when you call.
-               If something on the job is not right, you hear it from me first&nbsp;&mdash;
+               If something on the job is not right, you hear it from me first,
                not from an invoice.&rdquo;</p>
           </blockquote>
           <p class="owner__sig"><b>Mikhail</b><span>Runs every NEKO project</span></p>
