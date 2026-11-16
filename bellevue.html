@@ -944,10 +944,13 @@ a { color: inherit; }
 .nav a, .nav__toggle, .header .btn { white-space: nowrap; }
 @media (max-width: 1420px) { .nav { gap: 18px; } .nav a, .nav__toggle { letter-spacing: 0.08em; } }
 @media (max-width: 1180px) { .header__tel { display: none; } }
+
+.lic { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+.lic:hover { color: var(--gold); }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"GeneralContractor",
-"name":"NEKO Construction","telephone":"+14257404501",
+"name":"NEKO Construction","legalName":"NEKO Construction LLC","telephone":"+14257404501",
 "url":"https://neko-construction.com/","areaServed":{"@type":"City","name":"Bellevue, WA"},
 "address":{"@type":"PostalAddress","addressRegion":"WA","addressCountry":"US"},
 "sameAs":["https://www.instagram.com/neko.construction/"]}
@@ -1122,8 +1125,8 @@ a { color: inherit; }
       </div>
     </div>
     <div class="footer__legal">
-      <span>© <span id="year">2026</span> NEKO Construction</span>
-      <span>WA Contractor Registration <span class="todo">L&amp;I number TBD</span></span>
+      <span>© <span id="year">2026</span> NEKO Construction LLC</span>
+      <span>WA Contractor Registration <a class="lic" href="https://secure.lni.wa.gov/verify/Detail.aspx?UBI=&amp;LIC=NEKOCCL812P3&amp;SAW=" target="_blank" rel="noopener">NEKOCCL812P3</a></span>
       <span>Bonded &amp; insured</span>
     </div>
   </div>
